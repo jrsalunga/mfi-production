@@ -2403,6 +2403,97 @@ function postCancelledTable(id){
 
 
 
+$.fn.fixMe = function(option) {
+    return this.each(function() {
+        
+        var $this = $(this),
+        $t_fixed;
+        
+        function init() {
+            $this.wrap('<div/>');
+            $t_fixed = $this.clone();
+            $t_fixed.find("tbody").remove().end().css({
+                "top": function(){
+                	return $(option.container).height() || 0;
+                },
+                "position":"fixed",
+                "width":function(){
+                    return $this.css('width');
+                },
+                "display":"none",
+                "border":"none",
+                "background-color": function(){
+                    if($this.css('background-color')=='transparent' || $this.css('background-color')=='rgba(0, 0, 0, 0)'){
+                        return '#fff';
+                    } else {
+                        return $this.css('background-color');
+                    }
+                },
+                "box-shadow":"0 8px 5px -10px #999",
+                "-webkit-box-shadow":"0 10px 30px -9px #999",
+                "z-index":1
+            }).insertBefore($this);
+            resizeFixed();
+        }
+        
+        function resizeFixed() {
+            $t_fixed.find("th").each(function(index) {
+				console.log($this.find("th").eq(index).outerWidth());
+                $(this).css("width",$this.find("th").eq(index).outerWidth()+"px");
+            });
+        }
+     
+        function scrollFixed() {
+           
+            var offset = $(this).scrollTop() + $(option.container).height(),
+            tableOffsetTop = $this.offset().top,
+            tableOffsetBottom = tableOffsetTop + $this.height() - $this.find("thead").height();
+            if(offset < tableOffsetTop || offset > tableOffsetBottom)
+                $t_fixed.hide();
+            else if(offset >= tableOffsetTop && offset <= tableOffsetBottom && $t_fixed.is(":hidden"))
+                $t_fixed.show();
+        }
+        
+        $(window).resize(resizeFixed);
+        $(window).scroll(scrollFixed);
+        init();
+    });
+};
+
+
+function daterange(){
+
+  	$( "#fr" ).datepicker({
+		defaultDate: "+1w",
+		dateFormat: 'yy-mm-dd',
+		changeMonth: true,
+		numberOfMonths: 2,
+		onClose: function( selectedDate ) {
+			$( "#to" ).datepicker( "option", "minDate", selectedDate );
+		},
+		beforeShow: function() {
+			setTimeout(function(){
+				$('#ui-datepicker-div').css('z-index', 1002);
+			}, 0);
+		}
+	});
+    $( "#to" ).datepicker({
+  		defaultDate: "+1w",
+      	dateFormat: 'yy-mm-dd',
+      	changeMonth: true,
+      	numberOfMonths: 2,
+      	onClose: function( selectedDate ) {
+        	$( "#fr" ).datepicker( "option", "maxDate", selectedDate );
+      	},
+		beforeShow: function() {
+			setTimeout(function(){
+				$('#ui-datepicker-div').css('z-index', 1002);
+			}, 0);
+		}
+    });
+}
+
+
 
 
 

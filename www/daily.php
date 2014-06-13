@@ -79,7 +79,7 @@ table.table thead tr th {
     <div class="stage">
     	
       		<div class="col-md-12 title">
-            	<h1>Daily Production Output</h1>
+            	<h1>Daily Production Output Board</h1>
             </div>
             <div class="col-md-6 title">
             	
@@ -118,7 +118,14 @@ table.table thead tr th {
 						echo '<tr>';
 						echo '<td>'.$date->format('M j').'</td>';
 							foreach($operations as $operation){
-								echo '<td>-</td>';
+								$sql = "SELECT SUM(totparts) AS totparts FROM prodhdr ";
+								$sql .= "WHERE date = '".$date->format('Y-m-d')."' ";
+								$sql .= "AND opnid = '".$operation->id."' ORDER BY date DESC";
+								$prodhdr = Prodhdr::find_by_sql($sql);
+								$prodhdr = array_shift($prodhdr);
+								echo '<td>';
+								echo $prodhdr->totparts > 0 ? number_format($prodhdr->totparts):'';
+								echo '</td>';
 							}
 						echo '</tr>';
 					}
@@ -170,48 +177,13 @@ table.table thead tr th {
 <script>
 
 
-
-function daterange(){
-
-  	$( "#fr" ).datepicker({
-		defaultDate: "+1w",
-		dateFormat: 'yy-mm-dd',
-		changeMonth: true,
-		numberOfMonths: 2,
-		onClose: function( selectedDate ) {
-			$( "#to" ).datepicker( "option", "minDate", selectedDate );
-		},
-		beforeShow: function() {
-			setTimeout(function(){
-				$('#ui-datepicker-div').css('z-index', 1002);
-			}, 0);
-		}
-	});
-    $( "#to" ).datepicker({
-  		defaultDate: "+1w",
-      	dateFormat: 'yy-mm-dd',
-      	changeMonth: true,
-      	numberOfMonths: 2,
-      	onClose: function( selectedDate ) {
-        	$( "#fr" ).datepicker( "option", "maxDate", selectedDate );
-      	},
-		beforeShow: function() {
-			setTimeout(function(){
-				$('#ui-datepicker-div').css('z-index', 1002);
-			}, 0);
-		}
-    });
-}
-
-
-
-
-
 $(document).ready(function(e) {
 	
 	daterange();
 	
-	
+	$('table.table').fixMe({
+		'container': '.navbar'	
+	});
 
 	
 });

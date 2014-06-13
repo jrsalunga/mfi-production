@@ -15,7 +15,15 @@ require_once('../lib/initialize.php');
 
 <link rel="stylesheet" href="css/bootstrap.css">
 <link rel="stylesheet" href="css/styles-ui2.css">
-
+<style>
+table.table thead tr th {
+	font-weight: normal;
+	font-size:12px;
+}
+table.table tbody tr td:not(:nth-child(1)) {
+	text-align:right
+}
+</style>
 </head>
 <body id="app-body" class="state-nav">
 
@@ -66,7 +74,52 @@ require_once('../lib/initialize.php');
 
     <div>
     <div class="stage">
-
+		
+        <div class="col-md-12 title">
+       		<h1>Monthly Production Output Board</h1>
+     	</div>
+        <div class="col-md-12">
+            	<?php
+					$operations = Operation::find_all();
+				?>
+                <br>
+            	<table class="table table-bordered">
+                <thead>
+                	<tr>
+                    	<th>MONTHS</th>
+                        <?php
+							foreach($operations as $operation){
+								echo '<th title="'.$operation->descriptor.'">'.$operation->code.'</th>';
+							}
+						?>
+                    </tr>
+                </thead>
+            	<?php
+					//date('Y-m-t', strtotime(date('Y', strtotime('now')).'-'.$mon))
+					for($mon=1; $mon<=12; $mon++){
+						$curr_mon = date('Y', strtotime('now')).'-'.$mon;
+						$mon_begin = date('Y-m-01', strtotime($curr_mon));
+						$mon_end = date('Y-m-t', strtotime($curr_mon));
+						echo '<tr>';
+						echo '<td><a href="/daily?fr='.$mon_begin.'&to='.$mon_end.'">';
+						echo date('F', strtotime(date('Y', strtotime('now')).'-'.$mon)).'</a></td>';
+							foreach($operations as $operation){
+								$sql = "SELECT SUM(totparts) AS totparts FROM prodhdr ";
+								$sql .= "WHERE date BETWEEN '".$mon_begin."' AND '".$mon_end."' ";
+								$sql .= "AND opnid = '".$operation->id."' ORDER BY date DESC";
+								$prodhdr = Prodhdr::find_by_sql($sql);
+								$prodhdr = array_shift($prodhdr);
+								echo '<td>';
+								echo $prodhdr->totparts > 0 ? number_format($prodhdr->totparts):'';
+								echo '</td>';
+							}
+						echo '</tr>';
+					}
+				
+				
+				?>
+                </table>
+            </div>
   
 
     </div>
@@ -116,6 +169,9 @@ require_once('../lib/initialize.php');
 $(document).ready(function(e) {
 	
 	
+	$('table.table').fixMe({
+		'container': '.navbar'	
+	});
 
 	
 });
