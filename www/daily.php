@@ -26,6 +26,9 @@ table.table thead tr th {
 	font-weight: normal;
 	font-size:12px;
 }
+table.table tbody tr td:not(:nth-child(1)) {
+	text-align:right
+}
 </style>
 </head>
 <body id="app-body" class="state-nav">
