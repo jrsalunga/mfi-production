@@ -3,7 +3,7 @@ require_once('../lib/initialize.php');
 !$session->is_logged_in() ? redirect_to("login"): "";
 if(isset($_GET['fr']) && isset($_GET['to'])){
     sanitize($_GET);
-    $dr = new DateRange($_GET['fr'],$_GET['to'], false);
+    $dr = new DateRange($_GET['fr'],$_GET['to']);
 } else {
     $dr = new DateRange(NULL,NULL,false);   
 }
@@ -117,6 +117,22 @@ table.table tbody tr td:not(:nth-child(1)) {
                     </tr>
                 </thead>
             	<?php
+					echo '<tr class="info">';
+					echo '<td>Average</td>';
+					foreach($operations as $operation){
+						$sql = "SELECT SUM(totparts) AS totparts FROM prodhdr ";
+						$sql .= "WHERE date BETWEEN '".$dr->fr."' AND '".$dr->to."' ";
+						$sql .= "AND opnid = '".$operation->id."'";
+						$prodhdr = Prodhdr::find_by_sql($sql);
+						$prodhdr = array_shift($prodhdr);
+						$ave = $prodhdr->totparts / ($dr->date_diff() + 1);
+						echo '<td>';
+						echo $ave!=0 ? number_format($ave,2):'-';
+						echo '</td>';
+						
+					}
+					echo '</tr>';
+				
 					foreach($dr->getDaysInterval() as $date){
 						echo '<tr>';
 						echo '<td>'.$date->format('M j').'</td>';

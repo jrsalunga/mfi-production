@@ -102,6 +102,15 @@ class DateRange {
 			return false;
 		}
 	}
+	
+	
+	public function date_diff(){
+		
+		$f = new DateTime($this->fr);
+		$t = new DateTime($this->to);
+		$diff = $f->diff($t);
+		return $diff->format('%a');
+	}
 							
 							
 	public function get_current(){
