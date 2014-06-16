@@ -134,7 +134,7 @@ table.table tbody tr td:not(:nth-child(1)) {
 					echo '</tr>';
 				
 					foreach($dr->getDaysInterval() as $date){
-						echo '<tr>';
+						echo $date->format('D')=='Sun'?'<tr class="warning">':'<tr>';
 						echo '<td>'.$date->format('M j').'</td>';
 							foreach($operations as $operation){
 								$sql = "SELECT SUM(totparts) AS totparts FROM prodhdr ";
