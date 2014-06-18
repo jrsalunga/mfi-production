@@ -110,7 +110,7 @@ table.table tbody tr td:not(:nth-child(1)) {
 					$operations = Operation::find_all();
 				?>
                 <br>
-            	<table class="table table-bordered">
+            	<table class="table table-bordered table-hover">
                 <thead>
                 	<tr>
                     	<th>DAYS</th>
@@ -135,7 +135,7 @@ table.table tbody tr td:not(:nth-child(1)) {
 						$ave2 = $prodhdr->totparts / $prodhdr->totline;
 						echo '<td>';
 						echo $ave!=0 ? '<span class="ave1" title="average per day">'.number_format($ave,2).'</span>':'-';
-						echo $ave2!=0 ? '<br><span class="ave2" title="average per working day: '. $prodhdr->totline .'">'.number_format($ave2,2).'</span>':'-';
+						echo $ave2>0 ? '<br><span class="ave2" title="average per working day: '. $prodhdr->totline .'">'.number_format($ave2,2).'</span>':'-';
 						echo '</td>';
 						
 					}

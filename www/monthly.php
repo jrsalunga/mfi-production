@@ -21,7 +21,25 @@ table.table thead tr th {
 	font-size:12px;
 }
 table.table tbody tr td:not(:nth-child(1)) {
-	text-align:right
+	text-align:right;
+	font-weight:bold;
+}
+table.table tbody tr td div {
+	font-size:13px;
+	color:#666666;
+	text-align:right;
+	font-weight:normal;
+	
+	
+          transition: all 100ms ease-in-out;
+     -moz-transition: all 100ms ease-in-out;
+	-webkit-transition: all 100ms ease-in-out;
+}
+table.table tbody tr td:nth-child(1) div {
+	opacity: 0;
+}
+table.table tbody tr:hover td:nth-child(1) div {
+	opacity: 0.8;
 }
 </style>
 </head>
@@ -83,7 +101,7 @@ table.table tbody tr td:not(:nth-child(1)) {
 					$operations = Operation::find_all();
 				?>
                 <br>
-            	<table class="table table-bordered">
+            	<table class="table table-bordered table-hover">
                 <thead>
                 	<tr>
                     	<th>MONTHS</th>
@@ -100,17 +118,24 @@ table.table tbody tr td:not(:nth-child(1)) {
 						$curr_mon = date('Y', strtotime('now')).'-'.$mon;
 						$mon_begin = date('Y-m-01', strtotime($curr_mon));
 						$mon_end = date('Y-m-t', strtotime($curr_mon));
+						$m_end = date('Y-m-t', strtotime($curr_mon)) < date('Y-m-d', strtotime('now')) ? date('Y-m-t', strtotime($curr_mon)):date('Y-m-d', strtotime('now'));
+						$dr = new DateRange($mon_begin,$m_end,false);
 						echo '<tr>';
 						echo '<td><a href="/daily?fr='.$mon_begin.'&to='.$mon_end.'">';
-						echo date('F', strtotime(date('Y', strtotime('now')).'-'.$mon)).'</a></td>';
+						echo date('F', strtotime(date('Y', strtotime('now')).'-'.$mon)).'</a>';
+						echo '<div>Ave</div><div>Work Ave</div></td>';
 							foreach($operations as $operation){
-								$sql = "SELECT SUM(totparts) AS totparts FROM prodhdr ";
+								$sql = "SELECT SUM(totparts) AS totparts, COUNT(DISTINCT date) AS totline FROM prodhdr ";
 								$sql .= "WHERE date BETWEEN '".$mon_begin."' AND '".$mon_end."' ";
 								$sql .= "AND opnid = '".$operation->id."' ORDER BY date DESC";
 								$prodhdr = Prodhdr::find_by_sql($sql);
 								$prodhdr = array_shift($prodhdr);
+								$ave = $prodhdr->totparts/($dr->date_diff() + 1);
+								$ave2 = $prodhdr->totparts / $prodhdr->totline;
 								echo '<td>';
 								echo $prodhdr->totparts > 0 ? number_format($prodhdr->totparts):'';
+								echo $ave!=0 ? '<div>'. number_format($ave,2) .'<div>':'';
+								echo $ave2>0 ? '<div>'.number_format($ave2,2).'</div>':'';
 								echo '</td>';
 							}
 						echo '</tr>';
