@@ -29,6 +29,10 @@ table.table thead tr th {
 table.table tbody tr td:not(:nth-child(1)) {
 	text-align:right
 }
+.ave2 {
+	font-size: 11px;
+	color:#666666;
+}
 </style>
 </head>
 <body id="app-body" class="state-nav">
@@ -120,14 +124,16 @@ table.table tbody tr td:not(:nth-child(1)) {
 					echo '<tr class="info">';
 					echo '<td>Average</td>';
 					foreach($operations as $operation){
-						$sql = "SELECT SUM(totparts) AS totparts FROM prodhdr ";
+						$sql = "SELECT SUM(totparts) AS totparts, COUNT(DISTINCT date) AS totline FROM prodhdr ";
 						$sql .= "WHERE date BETWEEN '".$dr->fr."' AND '".$dr->to."' ";
 						$sql .= "AND opnid = '".$operation->id."'";
 						$prodhdr = Prodhdr::find_by_sql($sql);
 						$prodhdr = array_shift($prodhdr);
 						$ave = $prodhdr->totparts / ($dr->date_diff() + 1);
+						$ave2 = $prodhdr->totparts / $prodhdr->totline;
 						echo '<td>';
-						echo $ave!=0 ? number_format($ave,2):'-';
+						echo $ave!=0 ? '<span class="ave1" title="average per day">'.number_format($ave,2).'</span>':'-';
+						echo $ave2!=0 ? '<br><span class="ave2" title="average per working day: "'.$prodhdr->totline.'">'.number_format($ave2,2).'</span>':'-';
 						echo '</td>';
 						
 					}
